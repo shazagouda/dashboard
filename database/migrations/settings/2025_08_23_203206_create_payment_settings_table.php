@@ -33,9 +33,9 @@ return new class extends Migration
             $table->enum('unlock_documents', ['Yes', 'No'])->default('No');
 
             $table->string('payment_type')->nullable();
-            $table->decimal('quote_valid_until')->nullable();
-            $table->string(column: 'auto_bill_on')->nullable();
-            $table->string(column: 'expense_payment_type')->nullable();
+            $table->integer('quote_valid_until')->nullable();
+            $table->string( 'auto_bill_on')->nullable();
+            $table->string( 'expense_payment_type')->nullable();
 
             $table->timestamps();
         });

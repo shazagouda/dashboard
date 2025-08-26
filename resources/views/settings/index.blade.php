@@ -420,7 +420,7 @@
                         </li>
 
                         <li class="settings-sidebar-item" onclick="loadPage('payment-settings')">
-                            <a href="{{ route('payment.index') }}" onclick="event.preventDefault()">Payment Settings</a>
+                            <a href="{{ route('paymentsetting.index') }}" onclick="event.preventDefault()">Payment Settings</a>
                         </li>
                         <li class="settings-sidebar-item" onclick="loadPage('tax-settings')">
                             <a href="{{ route('tax.index') }}" onclick="event.preventDefault()">Tax Settings</a>

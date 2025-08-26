@@ -30,7 +30,7 @@ use App\Http\Controllers\CreditController;
 
 
 
-use App\Http\Controllers\ReportsController;
+
 
 use App\Models\Transactions;
 use App\Http\Controllers\TransactionController;
@@ -40,10 +40,10 @@ use App\Http\Controllers\RecurringExpenseController;
 use App\Http\Controllers\RecurringExpenseCreateController;
 
 use App\Http\Controllers\settings\SettingsController;
-use App\Http\Controllers\settings\CompanyDetailsController;
 
+use App\Http\Controllers\settings\CompanyDetailsController;
 use App\Http\Controllers\settings\UserDetailsController;
-use App\Http\Controllers\settings\PaymentSettingsController;
+use App\Http\Controllers\Settings\PaymentSettingsController;
 use App\Http\Controllers\settings\TaxController;
 use App\Http\Controllers\settings\TaskController;
 use App\Http\Controllers\settings\ProductsController;
@@ -189,10 +189,6 @@ Route::resource('payments', PaymentController::class)->except(['show']);
 
 // -------------------- QUOTES --------------------
 
-Route::get('/settings/payment-settings', [PaymentSettingsController::class, 'index'])->name('payment.index');
-Route::post('/settings/payment-settings',  [PaymentSettingsController::class, 'store'])->name(name: 'payment.store');
-///////////////////////////////////////////////////////////
-
 
 Route::prefix('quotes')->group(function () {
     Route::get('/', [QuoteController::class, 'index'])->name('quotes.index');           // List all quotes
@@ -232,3 +228,60 @@ Route::get('/newprojects/create', [NewProjectController::class, 'create'])->name
 Route::post('/newprojects', [NewProjectController::class, 'store'])->name('newprojects.store');
 
 
+
+//recurring expenses
+Route::get('/recurring-expenses', [RecurringExpenseController::class, 'index'])->name('recurring_expense.index');
+Route::get('/recurring-expenses-create', [RecurringExpenseController::class, 'create'])->name('recurring_expense.create');
+Route::get('/recurring-expenses-import', [RecurringExpenseController::class, 'import'])->name('recurring_expense.import');
+Route::post('/recurring-expenses', [RecurringExpenseController::class, 'store'])->name('recurring_expense.store');
+Route::delete('recurring_expenses/{recurring_expense}', [RecurringExpenseController::class, 'destroy'])->name('recurring_expense.destroy');
+Route::get('/recurring_expenses/{id}/edit',  [RecurringExpenseController::class, 'edit'])->name('recurring_expense.edit');
+Route::put('/recurring_expenses/{id}', [RecurringExpenseController::class, 'update'])->name('recurring_expense.update');
+
+//transaction page
+Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions.index');
+Route::get('/transactions-create', [TransactionController::class, 'create'])->name('transactions.create');
+Route::get('/transactions-import', [TransactionController::class, 'import'])->name('transactions.import');
+Route::post('/transactions', [TransactionController::class, 'store'])->name('transactions.store');
+Route::delete('transactions/{transaction}', [TransactionController::class, 'destroy'])->name('transactions.destroy');
+Route::get('/transactions/{id}/edit',  [TransactionController::class, 'edit'])->name('transactions.edit');
+Route::put('/transactions/{id}', [TransactionController::class, 'update'])->name('transactions.update');
+
+
+
+//settings page
+Route::get( '/settings', [SettingsController::class, 'index'])->name('settings.index');
+//////////////////////////////////////////////////////
+Route::get( '/settings/company-details', [CompanyDetailsController::class, 'index'])->name('companydetails.index');
+Route::put('/settings/companydetails/update-details', [CompanyDetailsController::class, 'updateDetails'])->name('companydetails.updateDetails');
+Route::put('/settings/companydetails/update-address', [CompanyDetailsController::class, 'updateAddress'])->name('companydetails.updateAddress');
+/////////////////////////////////////////////////////
+Route::get('/settings/user-details', [UserDetailsController::class, 'index'])->name('userdetails.index');
+Route::post('/settings/user-details', [UserDetailsController::class, 'store'])->name('userdetails.store');
+////////////////////////////////////////////////
+Route::prefix('settings')->group(function () {
+    Route::get('/payment-settings', [PaymentSettingsController::class, 'index'])->name('paymentsetting.index');
+});
+
+Route::post('payment-settings', [PaymentSettingsController::class, 'store'])->name('paymentsetting.store');
+/////////////////////////////////////////////
+
+// Tax settings page
+Route::get( '/settings/tax-settings', [TaxController::class, 'index'])->name('tax.index');
+Route::post('/settings/tax-settings', [TaxController::class, 'store'])->name('tax.store');
+Route::post('/settings/tax-settings/update-settings', [TaxController::class, 'updateSettings'])->name('tax.updateSettings');
+Route::delete('/settings/tax-settings/{taxrate}', [TaxController::class, 'destroy'])->name('tax.destroy');
+
+/////////////////////////////////////////////
+Route::get('/settings/products-settings', [ProductsController::class, 'index'])->name('productsettings.index');
+Route::post('/settings/products-settings',  [ProductsController::class, 'store'])->name(name: 'productsettings.store');
+//////////////////////////////////////////
+Route::get('/settings/task-settings', [TaskController::class, 'index'])->name('task.index');
+Route::post('/settings/task-settings', [TaskController::class, 'store'])->name(name: 'task.store');
+//////////////////////////////////////////
+Route::get('/settings/expense-settings', [ExpenseController::class, 'index'])->name('expense.index');
+Route::post('/settings/expense-settings', [ExpenseController::class, 'store'])->name(name: 'expense.store');
+////////////////////////////////////////////////////
+Route::get('/settings/account-managment', action: [AccountManagmentController::class, 'index'])->name(name: 'accountmanagment.index');
+Route::post('/settings/account-managment', [AccountManagmentController::class, 'store'])->name(name: 'accountmanagment.store');
+Route::delete('settings/account-managment', [AccountManagmentController::class, 'destroy'])->name('accountmanagment.destroy');

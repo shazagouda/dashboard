@@ -428,11 +428,6 @@
       Transactions
       <i class="bi bi-plus plus-icon"></i>
     </a>
-    <a href="./reports" class="sidebar-item">
-      <i class="bi bi-graph-up"></i>
-      Reports
-      <i class="bi bi-plus plus-icon"></i>
-    </a>
     <a href="./settings" class="sidebar-item">
       <i class="bi bi-gear"></i>
       Settings

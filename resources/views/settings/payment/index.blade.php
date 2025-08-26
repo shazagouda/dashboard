@@ -35,7 +35,7 @@
 
     <h4>Auto Bill Settings</h4>
     <br>
-    <form action="{{ route('payment.store') }}" method="POST">
+    <form action="{{ route('paymentsetting.store') }}" method="POST">
         @csrf
         <div class="form-row">
             <label>Auto Bill Standard Invoices <br><span style="color: gray;">Auto bill standard invoices on the due
@@ -287,9 +287,10 @@
         </div>
         <div class="form-actions">
 
-            <a href="{{ route('payment.index') }}" class="btn-cancel" onclick="showuserTab('usermanage')">Cancel</a>
-            <button type="submit" class="btn-save">Save</button>
+            <a href="{{ route('settings.index') }}" class="btn-cancel" onclick="showuserTab('usermanage')">Cancel</a>
+            <button type="submit" class="btn btn-primary">Save Settings</button>
         </div>
+
     </form>
 </div>
 
