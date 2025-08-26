@@ -522,11 +522,11 @@
               <i class="bi bi-arrow-up-down sort-icon"></i>
             </th>
             <th class="sortable">
-              budgeted_hours
+              Price
               <i class="bi bi-arrow-up-down sort-icon"></i>
             </th>
             <th class="sortable">
-              client_id
+              Default quantity
               <i class="bi bi-arrow-up-down sort-icon"></i>
             </th>
             <th>Actions</th>
@@ -537,17 +537,22 @@
     <tr>
       <td><input type="checkbox" class="checkbox-input"></td>
       <td>{{ $product->name }}</td>
-      <td>{{ $product->public_notes }}</td>
-      <td>{{ number_format($product->budgeted_hours, 2) }}</td>
-      <td>{{ $product->client_id }}</td>
+      <td>{{ $product->description ?? 'No description' }}</td>
+      <td>${{ $product->price ? number_format($product->price, 2) : '0.00' }}</td>
+      <td>{{ $product->default_quantity }}</td>
       <td>
-    <a href="{{ route('products.edit', $product->id) }}" class="btn btn-sm btn-info">Edit</a>
+        <a href="{{ route('products.edit', $product->id) }}" class="btn btn-sm btn-info">Edit</a>
 
-<button type="button"
-        class="btn btn-sm btn-danger"
-        onclick="confirmDelete({{ $product->id }})">
-  Delete
-</button>
+        <button type="button"
+                class="btn btn-sm btn-danger"
+                onclick="confirmDelete({{ $product->id }})">
+          Delete
+        </button>
+      </td>
+    </tr>
+
+
+</tbody>
 
 
 </td>

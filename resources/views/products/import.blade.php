@@ -483,226 +483,189 @@
       </nav>
     </div>
 
-    <!-- Import Content -->
-    <div class="import-content">
-      <div class="import-section">
-        <h1 class="section-title">Product</h1>
+<form id="importForm" action="{{ route('products.import_csv') }}" method="POST" enctype="multipart/form-data">
+  @csrf
+  <div class="form-group">
+    <label class="form-label" for="csvFile">CSV file</label>
 
-        <form id="importForm" enctype="multipart/form-data">
-          <div class="form-group">
-            <label class="form-label" for="csvFile">CSV file</label>
+    <div class="file-upload-container">
+      <div class="file-upload-area" id="fileUploadArea">
+        <div class="upload-icon">
+          <i class="bi bi-file-earmark-arrow-up"></i>
+        </div>
+        <div class="upload-text">Drop files or click to upload</div>
+        <input type="file" class="file-input" id="csvFile" name="csvFile" accept=".csv" required>
+      </div>
 
-            <div class="file-upload-container">
-              <div class="file-upload-area" id="fileUploadArea">
-                <div class="upload-icon">
-                  <i class="bi bi-image"></i>
-                </div>
-                <div class="upload-text">Drop files or click to upload</div>
-                <input type="file" class="file-input" id="csvFile" name="csvFile" accept=".csv" required>
-              </div>
+      <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <div>Processing file...</div>
+      </div>
 
-              <div class="loading-overlay" id="loadingOverlay">
-                <div class="spinner"></div>
-                <div>Processing file...</div>
-              </div>
-
-              <div class="selected-file" id="selectedFile">
-                <div class="file-icon">
-                  <i class="bi bi-file-earmark-text"></i>
-                </div>
-                <div class="file-info">
-                  <div class="file-name" id="fileName"></div>
-                  <div class="file-size" id="fileSize"></div>
-                </div>
-                <button type="button" class="remove-file-btn" id="removeFileBtn">
-                  <i class="bi bi-x"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div class="help-text">
-            <div class="help-title">Import Guidelines:</div>
-            <div class="help-content">
-              Please ensure your CSV file includes the following columns:
-              <ul>
-                <li>Product Name (required)</li>
-                <li>Description/Notes (optional)</li>
-                <li>Price (required)</li>
-                <li>Default Quantity (optional, defaults to 1)</li>
-                <li>SKU/Product Code (optional)</li>
-                <li>Category (optional)</li>
-              </ul>
-              <a href="#" class="download-template-btn" id="downloadTemplate">Download sample template</a>
-            </div>
-          </div>
-
-          <div class="import-actions">
-            <button type="button" class="cancel-btn" onclick="window.location.href='./products.php'">
-              Cancel
-            </button>
-            <button type="submit" class="import-btn" id="importBtn">
-              Import Products
-            </button>
-          </div>
-        </form>
+      <div class="selected-file" id="selectedFile">
+        <div class="file-icon">
+          <i class="bi bi-file-earmark-text"></i>
+        </div>
+        <div class="file-info">
+          <div class="file-name" id="fileName"></div>
+          <div class="file-size" id="fileSize"></div>
+        </div>
+        <button type="button" class="remove-file-btn" id="removeFileBtn">
+          <i class="bi bi-x"></i>
+        </button>
       </div>
     </div>
   </div>
 
+  <div class="help-text">
+    <div class="help-title">Import Guidelines:</div>
+    <div class="help-content">
+      Please ensure your CSV file includes the following columns in order:
+      <ul>
+        <li><strong>Product Name</strong> (required) - Product name</li>
+        <li><strong>Description</strong> (optional) - Product description/notes</li>
+        <li><strong>Price</strong> (required) - Product price</li>
+        <li><strong>Default Quantity</strong> (optional) - Default quantity (defaults to 1)</li>
+        <li><strong>SKU</strong> (optional) - Product code/SKU</li>
+        <li><strong>Category</strong> (optional) - Product category</li>
+      </ul>
+      <strong>Note:</strong> If any required fields are missing, default values will be assigned automatically.
+      <br><br>
+      <a href="#" class="download-template-btn" id="downloadTemplate">Download sample template</a>
+    </div>
+  </div>
+
+  <div class="import-actions">
+    <button type="button" class="cancel-btn" onclick="window.location.href='{{ route('products.index') }}'">
+      Cancel
+    </button>
+    <button type="submit" class="import-btn" id="importBtn">
+      Import Products
+    </button>
+  </div>
+</form>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const fileUploadArea = document.getElementById('fileUploadArea');
+  const fileInput = document.getElementById('csvFile');
+  const selectedFile = document.getElementById('selectedFile');
+  const fileName = document.getElementById('fileName');
+  const fileSize = document.getElementById('fileSize');
+  const removeFileBtn = document.getElementById('removeFileBtn');
+  const importBtn = document.getElementById('importBtn');
+  const loadingOverlay = document.getElementById('loadingOverlay');
+  const importForm = document.getElementById('importForm');
+
+  // Click to upload
+  fileUploadArea.addEventListener('click', function() {
+    fileInput.click();
+  });
+
+  // Drag and drop functionality
+  fileUploadArea.addEventListener('dragover', function(e) {
+    e.preventDefault();
+    fileUploadArea.classList.add('dragover');
+  });
+
+  fileUploadArea.addEventListener('dragleave', function(e) {
+    e.preventDefault();
+    fileUploadArea.classList.remove('dragover');
+  });
+
+  fileUploadArea.addEventListener('drop', function(e) {
+    e.preventDefault();
+    fileUploadArea.classList.remove('dragover');
+
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      fileInput.files = files;
+      handleFileSelection(files[0]);
+    }
+  });
+
+  // File input change
+  fileInput.addEventListener('change', function(e) {
+    if (e.target.files.length > 0) {
+      handleFileSelection(e.target.files[0]);
+    }
+  });
+
+  // Remove file button
+  removeFileBtn.addEventListener('click', function() {
+    resetFileSelection();
+  });
+
+  // Handle file selection
+  function handleFileSelection(file) {
+    if (!file.name.toLowerCase().endsWith('.csv')) {
+      alert('Please select a CSV file.');
+      resetFileSelection();
+      return;
+    }
+
+    fileName.textContent = file.name;
+    fileSize.textContent = formatFileSize(file.size);
+    selectedFile.classList.add('show');
+    fileUploadArea.style.display = 'none';
+    importBtn.classList.add('active');
+  }
+
+  // Reset file selection
+  function resetFileSelection() {
+    fileInput.value = '';
+    selectedFile.classList.remove('show');
+    fileUploadArea.style.display = 'block';
+    importBtn.classList.remove('active');
+  }
+
+  // Format file size
+  function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  }
+
+  // Form submission
+  importForm.addEventListener('submit', function(e) {
+    if (!fileInput.files.length) {
+      e.preventDefault();
+      alert('Please select a CSV file to import.');
+      return;
+    }
+
+    // Show loading overlay
+    loadingOverlay.classList.add('show');
+    importBtn.disabled = true;
+  });
+
+  // Download template functionality
+  document.getElementById('downloadTemplate').addEventListener('click', function(e) {
+    e.preventDefault();
+
+    const csvContent = 'Product Name,Description,Price,Default Quantity,SKU,Category\n' +
+                      'Premium Web Hosting,Monthly web hosting service,29.99,1,WH-001,Hosting\n' +
+                      'SSL Certificate,Annual SSL certificate,89.99,1,SSL-001,Security\n' +
+                      'Domain Registration,.com domain registration,12.99,1,DOM-001,Domains\n' +
+                      'Email Marketing Tool,Professional email marketing platform,19.99,1,EMT-001,Marketing\n' +
+                      'Cloud Storage,100GB cloud storage service,9.99,1,CS-001,Storage';
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'product-import-template.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  });
+});
+</script>
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const fileUploadArea = document.getElementById('fileUploadArea');
-      const fileInput = document.getElementById('csvFile');
-      const selectedFile = document.getElementById('selectedFile');
-      const fileName = document.getElementById('fileName');
-      const fileSize = document.getElementById('fileSize');
-      const removeFileBtn = document.getElementById('removeFileBtn');
-      const importBtn = document.getElementById('importBtn');
-      const loadingOverlay = document.getElementById('loadingOverlay');
-      const importForm = document.getElementById('importForm');
 
-      // Drag and drop functionality
-      fileUploadArea.addEventListener('dragover', function(e) {
-        e.preventDefault();
-        fileUploadArea.classList.add('dragover');
-      });
-
-      fileUploadArea.addEventListener('dragleave', function(e) {
-        e.preventDefault();
-        fileUploadArea.classList.remove('dragover');
-      });
-
-      fileUploadArea.addEventListener('drop', function(e) {
-        e.preventDefault();
-        fileUploadArea.classList.remove('dragover');
-
-        const files = e.dataTransfer.files;
-        if (files.length > 0) {
-          handleFileSelection(files[0]);
-        }
-      });
-
-      // File input change
-      fileInput.addEventListener('change', function(e) {
-        if (e.target.files.length > 0) {
-          handleFileSelection(e.target.files[0]);
-        }
-      });
-
-      // Remove file button
-      removeFileBtn.addEventListener('click', function() {
-        resetFileSelection();
-      });
-
-      // Handle file selection
-      function handleFileSelection(file) {
-        // Validate file type
-        if (!file.name.toLowerCase().endsWith('.csv')) {
-          alert('Please select a CSV file.');
-          return;
-        }
-
-        // Display selected file
-        fileName.textContent = file.name;
-        fileSize.textContent = formatFileSize(file.size);
-        selectedFile.classList.add('show');
-        fileUploadArea.style.display = 'none';
-        importBtn.classList.add('active');
-      }
-
-      // Reset file selection
-      function resetFileSelection() {
-        fileInput.value = '';
-        selectedFile.classList.remove('show');
-        fileUploadArea.style.display = 'block';
-        importBtn.classList.remove('active');
-      }
-
-      // Format file size
-      function formatFileSize(bytes) {
-        if (bytes === 0) return '0 Bytes';
-        const k = 1024;
-        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-      }
-
-      // Form submission
-      importForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-
-        if (!fileInput.files.length) {
-          alert('Please select a CSV file to import.');
-          return;
-        }
-
-        // Show loading overlay
-        loadingOverlay.classList.add('show');
-        importBtn.disabled = true;
-
-        // Simulate file processing (replace with actual upload logic)
-        setTimeout(function() {
-          // Here you would typically send the file to your PHP backend
-          const formData = new FormData();
-          formData.append('csvFile', fileInput.files[0]);
-
-          // Example fetch request (uncomment and modify as needed)
-          /*
-          fetch('process-product-import.php', {
-            method: 'POST',
-            body: formData
-          })
-          .then(response => response.json())
-          .then(data => {
-            loadingOverlay.classList.remove('show');
-            importBtn.disabled = false;
-
-            if (data.success) {
-              alert('Products imported successfully!');
-              window.location.href = './products.php';
-            } else {
-              alert('Import failed: ' + data.message);
-            }
-          })
-          .catch(error => {
-            loadingOverlay.classList.remove('show');
-            importBtn.disabled = false;
-            alert('An error occurred during import.');
-          });
-          */
-
-          // For demo purposes, just show success after 2 seconds
-          loadingOverlay.classList.remove('show');
-          importBtn.disabled = false;
-          alert('Import completed successfully! (Demo)');
-          // window.location.href = './products.php';
-        }, 2000);
-      });
-
-      // Download template functionality
-      document.getElementById('downloadTemplate').addEventListener('click', function(e) {
-        e.preventDefault();
-
-        // Create sample CSV content for products
-        const csvContent = 'Product Name,Description,Price,Default Quantity,SKU,Category\n' +
-                          'Premium Web Hosting,Monthly web hosting service,29.99,1,WH-001,Hosting\n' +
-                          'SSL Certificate,Annual SSL certificate,89.99,1,SSL-001,Security\n' +
-                          'Domain Registration,.com domain registration,12.99,1,DOM-001,Domains';
-
-        // Create and download file
-        const blob = new Blob([csvContent], { type: 'text/csv' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'product-import-template.csv';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
-      });
-    });
-  </script>
 </body>
 </html>

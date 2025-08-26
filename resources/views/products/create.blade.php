@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Create Project - Bee Company</title>
+  <title>Create Product - Bee Company</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
   <style>
@@ -67,12 +67,67 @@
     /* Form */
     .form-container {
       background: #fff;
-      padding: 20px 25px;
+      padding: 30px;
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-      max-width: 800px;
+      max-width: 600px;
       width: 100%;
-      margin-top: 10px;
+      margin: 20px auto;
+    }
+
+    .form-container h4 {
+      font-size: 24px;
+      font-weight: 600;
+      color: #1f2937;
+      margin-bottom: 30px;
+    }
+
+    .form-label {
+      font-weight: 500;
+      color: #374151;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .form-control, .form-select {
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      padding: 12px 16px;
+      font-size: 14px;
+      transition: all 0.2s ease;
+      background-color: #fff;
+    }
+
+    .form-control:focus, .form-select:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      outline: none;
+    }
+
+    .form-select {
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+    }
+
+    .mb-3 {
+      margin-bottom: 20px !important;
+    }
+
+    .text-danger {
+      color: #dc2626 !important;
+    }
+
+    .btn-primary {
+      background-color: #3b82f6;
+      border-color: #3b82f6;
+      padding: 12px 24px;
+      font-weight: 500;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary:hover {
+      background-color: #2563eb;
+      border-color: #2563eb;
     }
   </style>
 </head>
@@ -94,66 +149,62 @@
             <a href="./index.php"><i class="bi bi-house-door"></i></a>
           </li>
           <li class="breadcrumb-item">
-            <a href="{{ route('products.index') }}">Projects</a>
+            <a href="{{ route('products.index') }}">Products</a>
           </li>
-          <li class="breadcrumb-item active" aria-current="page">Create Project</li>
+          <li class="breadcrumb-item active" aria-current="page">New Product</li>
         </ol>
       </nav>
     </div>
 
-   <!-- Form Container -->
-<div class="d-flex justify-content-center">
-  <div class="form-container">
-    <h4 class="mb-4">New Project</h4>
-    <form action="{{ route('products.store') }}" method="POST">
-      @csrf
+    <!-- Form Container -->
+    <div class="form-container">
+      <h4>New Product</h4>
+      <form action="{{ route('products.store') }}" method="POST">
+        @csrf
 
-      <div class="mb-3">
-        <label class="form-label">Project Name <span class="text-danger">*</span></label>
-        <input type="text" class="form-control" name="name" placeholder="Enter project name" required>
-      </div>
+        <div class="mb-3">
+          <label class="form-label">Item <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" name="name" required>
+        </div>
 
-      <div class="mb-3">
-  <label class="form-label">Client <span class="text-danger">*</span></label>
-  <select class="form-select" name="client_id" required>
-    <option selected disabled>Select client</option>
-    @foreach($clients as $client)
-      <option value="{{ $client->id }}">{{ $client->name }}</option>
-    @endforeach
-  </select>
-</div>
+        <div class="mb-3">
+          <label class="form-label">Description</label>
+          <textarea class="form-control" rows="4" name="description"></textarea>
+        </div>
 
+        <div class="mb-3">
+          <label class="form-label">Price</label>
+          <input type="number" class="form-control" name="price" step="0.01">
+        </div>
 
-      <div class="mb-3">
-        <label class="form-label">Due Date</label>
-        <input type="date" class="form-control" name="due_date">
-      </div>
+        <div class="mb-3">
+          <label class="form-label">Default Quantity</label>
+          <input type="number" class="form-control" name="default_quantity" value="1">
+        </div>
 
-      <div class="mb-3">
-        <label class="form-label">Budgeted Hours</label>
-        <input type="number" class="form-control" name="budgeted_hours" placeholder="Enter hours">
-      </div>
+        <div class="mb-3">
+          <label class="form-label">Max Quantity</label>
+          <input type="number" class="form-control" name="max_quantity">
+        </div>
 
-      <div class="mb-3">
-        <label class="form-label">Task Rate</label>
-        <input type="number" class="form-control" name="task_rate" placeholder="Enter task rate">
-      </div>
+        <div class="mb-3">
+          <label class="form-label">Tax Category</label>
+          <select class="form-select" name="tax_category">
+            <option value="Physical Goods" selected>Physical Goods</option>
+            <option value="Digital Services">Digital Services</option>
+            <option value="Consulting">Consulting</option>
+          </select>
+        </div>
 
-      <div class="mb-3">
-        <label class="form-label">Public Notes</label>
-        <textarea class="form-control" rows="3" name="public_notes"></textarea>
-      </div>
+        <div class="mb-3">
+          <label class="form-label">Image URL</label>
+          <input type="url" class="form-control" name="image_url">
+        </div>
 
-      <div class="mb-3">
-        <label class="form-label">Private Notes</label>
-        <textarea class="form-control" rows="3" name="private_notes"></textarea>
-      </div>
-
-      <button type="submit" class="btn btn-primary">Save Project</button>
-    </form>
+        <button type="submit" class="btn btn-primary">Save Product</button>
+      </form>
+    </div>
   </div>
-</div>
-
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

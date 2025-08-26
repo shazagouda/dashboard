@@ -509,17 +509,17 @@
     <!-- Import Content -->
     <div class="import-content">
       <div class="import-section">
-        <h1 class="section-title">Client</h1>
+        <h1 class="section-title">Client Import</h1>
 
-       <form id="importForm" action="{{ route('clients.import_csv') }}" method="POST" enctype="multipart/form-data">
-      @csrf
+        <form id="importForm" action="{{ route('clients.import_csv') }}" method="POST" enctype="multipart/form-data">
+          @csrf
           <div class="form-group">
             <label class="form-label" for="csvFile">CSV file</label>
 
             <div class="file-upload-container">
               <div class="file-upload-area" id="fileUploadArea">
                 <div class="upload-icon">
-                  <i class="bi bi-image"></i>
+                  <i class="bi bi-file-earmark-arrow-up"></i>
                 </div>
                 <div class="upload-text">Drop files or click to upload</div>
                 <input type="file" class="file-input" id="csvFile" name="csvFile" accept=".csv" required>
@@ -548,14 +548,16 @@
           <div class="help-text">
             <div class="help-title">Import Guidelines:</div>
             <div class="help-content">
-              Please ensure your CSV file includes the following columns:
+              Please ensure your CSV file includes the following columns in order:
               <ul>
-                <li>Name (required)</li>
-                <li>Email (required)</li>
-                <li>Phone (optional)</li>
-                <li>Company (optional)</li>
-                <li>Address (optional)</li>
+                <li><strong>Name</strong> (required) - Client name</li>
+                <li><strong>Email</strong> (optional) - Client email address</li>
+                <li><strong>Phone</strong> (optional) - Client phone number</li>
+                <li><strong>Group</strong> (optional) - Client group/category</li>
+                <li><strong>City</strong> (optional) - Client city</li>
               </ul>
+              <strong>Note:</strong> If any required fields are missing, default values will be assigned automatically.
+              <br><br>
               <a href="#" class="download-template-btn" id="downloadTemplate">Download sample template</a>
             </div>
           </div>
@@ -564,7 +566,7 @@
             <button type="button" class="cancel-btn" onclick="window.location.href='{{ route('clients') }}'">
               Cancel
             </button>
-            <button onclick="document.getElementById('importForm').submit();" type="submit" class="import-btn" id="importBtn">
+            <button type="submit" class="import-btn" id="importBtn">
               Import Clients
             </button>
           </div>
@@ -573,8 +575,9 @@
     </div>
   </div>
 
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
+<script>
     document.addEventListener('DOMContentLoaded', function() {
       const fileUploadArea = document.getElementById('fileUploadArea');
       const fileInput = document.getElementById('csvFile');
@@ -585,6 +588,11 @@
       const importBtn = document.getElementById('importBtn');
       const loadingOverlay = document.getElementById('loadingOverlay');
       const importForm = document.getElementById('importForm');
+
+      // Click to upload
+      fileUploadArea.addEventListener('click', function() {
+        fileInput.click();
+      });
 
       // Drag and drop functionality
       fileUploadArea.addEventListener('dragover', function(e) {
@@ -603,6 +611,7 @@
 
         const files = e.dataTransfer.files;
         if (files.length > 0) {
+          fileInput.files = files;
           handleFileSelection(files[0]);
         }
       });
@@ -624,6 +633,7 @@
         // Validate file type
         if (!file.name.toLowerCase().endsWith('.csv')) {
           alert('Please select a CSV file.');
+          resetFileSelection();
           return;
         }
 
@@ -652,11 +662,10 @@
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
       }
 
-      // Form submission
+      // Form submission with loading state
       importForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-
         if (!fileInput.files.length) {
+          e.preventDefault();
           alert('Please select a CSV file to import.');
           return;
         }
@@ -665,43 +674,7 @@
         loadingOverlay.classList.add('show');
         importBtn.disabled = true;
 
-        // Simulate file processing (replace with actual upload logic)
-        setTimeout(function() {
-          // Here you would typically send the file to your PHP backend
-          const formData = new FormData();
-          formData.append('csvFile', fileInput.files[0]);
-
-          // Example fetch request (uncomment and modify as needed)
-          /*
-          fetch('process-import.php', {
-            method: 'POST',
-            body: formData
-          })
-          .then(response => response.json())
-          .then(data => {
-            loadingOverlay.classList.remove('show');
-            importBtn.disabled = false;
-
-            if (data.success) {
-              alert('Clients imported successfully!');
-              window.location.href = './clients.php';
-            } else {
-              alert('Import failed: ' + data.message);
-            }
-          })
-          .catch(error => {
-            loadingOverlay.classList.remove('show');
-            importBtn.disabled = false;
-            alert('An error occurred during import.');
-          });
-          */
-
-          // For demo purposes, just show success after 2 seconds
-          loadingOverlay.classList.remove('show');
-          importBtn.disabled = false;
-          alert('Import completed successfully! (Demo)');
-          // window.location.href = './clients.php';
-        }, 2000);
+        // Let the form submit naturally - Laravel will handle it
       });
 
       // Download template functionality
@@ -709,9 +682,10 @@
         e.preventDefault();
 
         // Create sample CSV content
-        const csvContent = 'Name,Email,Phone,Company,Address\n' +
-                          'John Doe,john@example.com,+1234567890,Acme Corp,123 Main St\n' +
-                          'Jane Smith,jane@example.com,+0987654321,Tech Inc,456 Oak Ave';
+        const csvContent = 'Name,Email,Phone,Group,City\n' +
+                          'John Doe,john@example.com,+1234567890,VIP,Cairo\n' +
+                          'Jane Smith,jane@example.com,+0987654321,Regular,Alexandria\n' +
+                          'Ahmed Ali,ahmed@example.com,+1122334455,Premium,Giza';
 
         // Create and download file
         const blob = new Blob([csvContent], { type: 'text/csv' });

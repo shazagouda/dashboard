@@ -72,7 +72,7 @@ Route::get('/invoice-create', [InvoiceController::class, 'create'])->name('invoi
 Route::get('/recurring-invoice-create', [RecurringInvoiceController::class, 'create'])->name('recurring.invoice.create');
 
 Route::get('/products-import', [ProductController::class, 'import'])->name('products.import');
-Route::get('/invoices-import', [InvoiceController::class, 'import'])->name('invoices.import');
+Route::get('/invoice-import', [InvoiceController::class, 'import'])->name('invoices.import');
 Route::get('/invoice-create', [InvoiceController::class, 'create'])->name('invoice.create');
 Route::get('/recurring-invoice-create', [RecurringInvoiceController::class, 'create'])->name('recurring.invoice.create');
 Route::get('/recurring-invoice-import', [RecurringInvoiceController::class, 'import'])->name('recurring.invoice.import');
@@ -112,7 +112,7 @@ Route::delete('/products/{id}', [ProductController::class, 'destroy'])->name('pr
 // Show import page (optional route if you’re using it)
 
 // Handle file import (optional)
-Route::post('/products-import', [ProductController::class, 'import'])->name('products.import');
+Route::post('/products-import', [ProductController::class, 'import_csv'])->name('products.import_csv');
 
 
 

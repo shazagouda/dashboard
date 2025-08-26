@@ -85,10 +85,7 @@
             <th class="sortable">Name</th>
             <th class="sortable">Contact Email</th>
             <th class="sortable">ID Number</th>
-            <th class="sortable">Balance</th>
-            <th class="sortable">Paid to Date</th>
             <th class="sortable">Date Created</th>
-            <th class="sortable">Last Login</th>
             <th class="sortable">Website</th>
             <th>Actions</th>
           </tr>
@@ -100,10 +97,7 @@
                     <td>{{ $client->name }}</td>
                     <td>{{ $client->email }}</td>
                     <td>{{ $client->id_number }}</td>
-                    <td>{{ $client->balance }}</td>
-                    <td>{{ $client->paid_to_date }}</td>
                     <td>{{ $client->created_at->format('Y-m-d') }}</td>
-                    <td>{{ $client->last_login }}</td>
                     <td>{{ $client->website }}</td>
                   <td>
     <a href="{{ route('clients.edit', $client->id) }}" class="btn btn-sm btn-info">Edit</a>

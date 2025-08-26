@@ -131,48 +131,86 @@ public function destroy($id)
 
 
 
-public function import_csv(Request $request)
-{
-    try {
-        $request->validate([
-            'csvFile' => 'required|file|mimes:csv,txt,csv',
-        ]);
+ public function import_csv(Request $request)
+    {
+        try {
+            // Validate the uploaded file
+            $request->validate([
+                'csvFile' => 'required|file|mimes:csv,txt',
+            ]);
 
-        $file = $request->file('csvFile');
+            $file = $request->file('csvFile');
 
-        if (!$file->isValid()) {
-            return redirect()->back()->with('error', 'Invalid file upload.');
-        }
-
-        $path = $file->getRealPath();
-
-        if (($handle = fopen($path, 'r')) !== false) {
-            $header = fgetcsv($handle);
-
-            while (($row = fgetcsv($handle)) !== false) {
-                if (count($row) < 2) {
-                    continue;
-                }
-
-                Client::create([
-                    'name' => $row[0],
-                    'email' => $row[1],
-                    'phone' => $row[2] ?? null,
-                    'company' => $row[3] ?? null,
-                    'address' => $row[4] ?? null,
-                ]);
+            if (!$file->isValid()) {
+                return redirect()->back()->with('error', 'Invalid file upload.');
             }
 
-            fclose($handle);
-        } else {
-            return redirect()->back()->with('error', 'Could not open the file.');
+            $path = $file->getRealPath();
+            $importedCount = 0;
+            $skippedCount = 0;
+
+            if (($handle = fopen($path, 'r')) !== false) {
+                // Skip the header row
+                $header = fgetcsv($handle);
+
+                while (($row = fgetcsv($handle)) !== false) {
+                    // Skip empty rows
+                    if (empty(array_filter($row))) {
+                        continue;
+                    }
+
+                    try {
+                        // Map CSV columns to database fields with default values
+                        $clientData = [
+                            'name' => isset($row[0]) && !empty(trim($row[0])) ? trim($row[0]) : 'Unknown Client',
+                            'email' => isset($row[1]) && !empty(trim($row[1])) ? trim($row[1]) : null,
+                            'phone' => isset($row[2]) && !empty(trim($row[2])) ? trim($row[2]) : null,
+                            'group' => isset($row[3]) && !empty(trim($row[3])) ? trim($row[3]) : 'Default Group',
+                            'city' => isset($row[4]) && !empty(trim($row[4])) ? trim($row[4]) : null,
+
+                            // Set default values for required fields that might be missing
+                            'number' => 'AUTO-' . time() . '-' . $importedCount,
+                            'user' => 'Imported User',
+                            'classification' => 'Standard',
+                            'country' => 'Egypt', // Default country
+                            'valid_vat' => false,
+                            'tax_exempt' => false,
+                            'add_to_invoices' => true,
+                        ];
+
+                        // Validate email if provided
+                        if ($clientData['email'] && !filter_var($clientData['email'], FILTER_VALIDATE_EMAIL)) {
+                            $clientData['email'] = null;
+                        }
+
+                        // Create the client
+                        Client::create($clientData);
+                        $importedCount++;
+
+                    } catch (\Exception $e) {
+                        Log::error('Error importing client row: ' . json_encode($row) . ' - ' . $e->getMessage());
+                        $skippedCount++;
+                        continue;
+                    }
+                }
+
+                fclose($handle);
+            } else {
+                return redirect()->back()->with('error', 'Could not open the file.');
+            }
+
+            $message = "Import completed! Imported: {$importedCount} clients";
+            if ($skippedCount > 0) {
+                $message .= ", Skipped: {$skippedCount} rows due to errors";
+            }
+
+            return redirect()->route('clients')->with('success', $message);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return redirect()->back()->with('error', 'File validation failed: ' . implode(', ', $e->validator->errors()->all()));
+        } catch (\Exception $e) {
+            Log::error('CSV Import Error: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error during import: ' . $e->getMessage());
         }
-
-        return redirect()->route('clients')->with('success', 'Clients imported successfully.');
-
-    } catch (\Exception $e) {
-        // هنا رح نرجع الخطأ عشان تعرف شو المشكلة
-        return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
     }
-}
 }
