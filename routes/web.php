@@ -17,8 +17,19 @@ use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\RecurringInvoiceController;
-use App\Http\Controllers\ProjectController;
+
+
 use App\Http\Controllers\NewProjectController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\QuoteController;
+use App\Http\Controllers\NewClientController;
+use App\Http\Controllers\CreditController;
+
+
+
+
+
+
 
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -37,10 +48,6 @@ Route::get('/invoices-import', [InvoiceController::class, 'import'])->name('invo
 Route::get('/invoice-create', [InvoiceController::class, 'create'])->name('invoice.create');
 Route::get('/recurring-invoice-create', [RecurringInvoiceController::class, 'create'])->name('recurring.invoice.create');
 Route::get('/recurring-invoice-import', [RecurringInvoiceController::class, 'import'])->name('recurring.invoice.import');
-
-
-
-
 
 
 
@@ -78,16 +85,6 @@ Route::delete('/products/{id}', [ProductController::class, 'destroy'])->name('pr
 
 // Handle file import (optional)
 Route::post('/products-import', [ProductController::class, 'import'])->name('products.import');
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -143,10 +140,6 @@ Route::delete('/recurring-invoices/{invoice}', [RecurringInvoiceController::clas
 
 
 
-use App\Http\Controllers\PaymentController;
-use App\Http\Controllers\QuoteController;
-use App\Http\Controllers\NewClientController;
-use App\Http\Controllers\CreditController;
 
 
 
@@ -203,3 +196,5 @@ Route::resource('newclients', NewClientController::class);
 Route::get('/newprojects', [NewProjectController::class, 'index'])->name('newprojects.index');
 Route::get('/newprojects/create', [NewProjectController::class, 'create'])->name('newprojects.create');
 Route::post('/newprojects', [NewProjectController::class, 'store'])->name('newprojects.store');
+
+
