@@ -37,20 +37,13 @@ use App\Http\Controllers\settings\SettingsController;
 use App\Http\Controllers\settings\CompanyDetailsController;
 
 use App\Http\Controllers\settings\UserDetailsController;
-use App\Http\Controllers\settings\PaymentController;
+use App\Http\Controllers\settings\PaymentSettingsController;
 use App\Http\Controllers\settings\TaxController;
 use App\Http\Controllers\settings\TaskController;
 use App\Http\Controllers\settings\ProductsController;
 use App\Http\Controllers\settings\ExpenseController;
-
-use App\Http\Controllers\settings\WorkFlowController;
-use App\Http\Controllers\settings\CreditcardANDbankcontroller;
 use App\Http\Controllers\settings\AccountManagmentController;
-use App\Http\Controllers\settings\EmailSettingsController;
-use App\Http\Controllers\settings\ClientPortalController;
-use App\Http\Controllers\settings\GroupSettingsController;
-use App\Http\Controllers\settings\PaymentLinksController;
-use App\Http\Controllers\settings\UserManagmentController;
+
 
 
 
@@ -200,8 +193,8 @@ Route::put('/settings/companydetails/update-address', [CompanyDetailsController:
 Route::get('/settings/user-details', [UserDetailsController::class, 'index'])->name('userdetails.index');
 Route::post('/settings/user-details', [UserDetailsController::class, 'store'])->name('userdetails.store');
 
-Route::get('/settings/payment-settings', [PaymentController::class, 'index'])->name('payment.index');
-Route::post('/settings/payment-settings',  [PaymentController::class, 'store'])->name(name: 'payment.store');
+Route::get('/settings/payment-settings', [PaymentSettingsController::class, 'index'])->name('payment.index');
+Route::post('/settings/payment-settings',  [PaymentSettingsController::class, 'store'])->name(name: 'payment.store');
 ///////////////////////////////////////////////////////////
 
 // Tax settings page
