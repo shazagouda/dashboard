@@ -30,6 +30,34 @@ use App\Http\Controllers\CreditController;
 
 
 
+use App\Http\Controllers\ReportsController;
+
+use App\Models\Transactions;
+use App\Http\Controllers\TransactionController;
+
+use App\Models\RecurringExpense;
+use App\Http\Controllers\RecurringExpenseController;
+use App\Http\Controllers\RecurringExpenseCreateController;
+
+use App\Http\Controllers\settings\SettingsController;
+use App\Http\Controllers\settings\CompanyDetailsController;
+
+use App\Http\Controllers\settings\UserDetailsController;
+use App\Http\Controllers\settings\PaymentSettingsController;
+use App\Http\Controllers\settings\TaxController;
+use App\Http\Controllers\settings\TaskController;
+use App\Http\Controllers\settings\ProductsController;
+use App\Http\Controllers\settings\ExpenseController;
+use App\Http\Controllers\settings\AccountManagmentController;
+
+
+
+
+use App\Models\CompanyDetails;
+use App\Models\Settings\Expense;
+use App\Models\Transaction;
+use Faker\Provider\ar_EG\Payment;
+
 
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -158,7 +186,13 @@ Route::prefix('payments')->group(function () {
 Route::resource('payments', PaymentController::class)->except(['show']);
 
 
+
 // -------------------- QUOTES --------------------
+
+Route::get('/settings/payment-settings', [PaymentSettingsController::class, 'index'])->name('payment.index');
+Route::post('/settings/payment-settings',  [PaymentSettingsController::class, 'store'])->name(name: 'payment.store');
+///////////////////////////////////////////////////////////
+
 
 Route::prefix('quotes')->group(function () {
     Route::get('/', [QuoteController::class, 'index'])->name('quotes.index');           // List all quotes
